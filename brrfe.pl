@@ -92,11 +92,6 @@ package IITS::Clone::Cleaner
 			{
 				next if $file =~ m`$0`;
 				next FILE unless $file =~ m~$$regex{filetype}~;
-				say q|~|x45;
-				say q|> |, q|now editing |, UNDERLINE GREEN $file =~ s`^.*/``gr, RESET;
-				say q|> |, q|label: |, BLUE UNDERLINE $$regex{label}, RESET;
-				say q|> |, q|finding: |, YELLOW UNDERLINE $$regex{find}, RESET;
-				say q|> |, q|replacing: |, YELLOW UNDERLINE $$regex{replace}, RESET;
 				
 				open my $fh, q|+<|, $file 
 				or die RED qq|can't open file so quitting!\n|, RESET;
@@ -104,7 +99,14 @@ package IITS::Clone::Cleaner
 				my $content = (join q||, <$fh>) =~ s`\n` `gr;
 				$content =~ s`\t{2,}|\s{2,}` `g;
 				
-				$content =~ s`$$regex{find}`$$regex{replace}`ge;
+				my $edits = $content =~ s`$$regex{find}`$$regex{replace}`ge;
+				
+				say q|~|x45;
+				say q|> |, q|now editing |, UNDERLINE GREEN $file =~ s`^.*/``gr, RESET;
+				say q|> |, q|label: |, BLUE UNDERLINE $$regex{label}, RESET;
+				say q|> |, q|finding: |, YELLOW UNDERLINE $$regex{find}, RESET;
+				say q|> |, q|replacing: |, YELLOW UNDERLINE $$regex{replace}, RESET;
+				say q|> |, q|edits: |, YELLOW UNDERLINE $edits, RESET;
 				
 				seek $fh, 0, 0;
 				truncate $fh, 0;
